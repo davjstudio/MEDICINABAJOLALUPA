@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Endocrinología Bajo la Lupa | Medicina Bajo la Lupa</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5F8F7;
+    --paper-deep:#EAF1EF;
+    --ink:#132530;
+    --ink-soft:#4E6672;
+    --navy:#1B4D6E;
+    --navy-deep:#123449;
+    --navy-light:#2E6B93;
+    --teal:#2E9583;
+    --teal-deep:#20705F;
+    --teal-light:#6FC4B1;
+    --forest:#20705F;
+    --forest-light:#6FC4B1;
+    --line:#DCE7E4;
+    --sidebar-a:#0F2635;
+    --sidebar-b:#123B44;
+    --sidebar-c:#154A44;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Source Sans 3',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4,.font-display{font-family:'Fraunces',serif;}
+  .font-mono{font-family:'JetBrains Mono',monospace;}
+
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--teal-light);border-radius:8px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--teal);}
+
+  /* ---------- Lens motif ---------- */
+  .lens{
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+  .lens::after{
+    content:"";position:absolute;inset:-5px;border-radius:50%;
+    border:1.5px solid var(--teal-light);opacity:.55;
+  }
+
+  /* ---------- Layout shell ---------- */
+  .app-shell{display:flex;min-height:100vh;}
+  .sidebar{
+    width:288px;flex-shrink:0;
+    background:
+      radial-gradient(circle at 85% -10%, rgba(111,196,177,.18), transparent 45%),
+      linear-gradient(190deg,var(--sidebar-a) 0%, var(--sidebar-b) 55%, var(--sidebar-c) 100%);
+    color:#EAF6F2;position:fixed;top:0;left:0;bottom:0;z-index:40;
+    display:flex;flex-direction:column;transition:transform .3s ease;
+    border-right:1px solid rgba(111,196,177,.18);
+  }
+  .sidebar-scroll{overflow-y:auto;flex:1;padding-bottom:1rem;}
+  .main-area{margin-left:288px;flex:1;min-width:0;display:flex;flex-direction:column;}
+  @media (max-width:1024px){
+    .sidebar{transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);}
+    .main-area{margin-left:0;}
+  }
+
+  .nav-item{
+    display:flex;align-items:center;gap:.75rem;padding:.68rem .9rem;border-radius:.6rem;
+    color:#BFDCD4;font-size:.86rem;font-weight:500;cursor:pointer;transition:all .18s ease;
+    border:1px solid transparent;
+  }
+  .nav-item:hover{background:rgba(111,196,177,.1);color:#F1FAF7;}
+  .nav-item.active{background:rgba(46,149,131,.22);border-color:rgba(111,196,177,.45);color:#fff;}
+  .nav-num{
+    width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono',monospace;font-size:.68rem;font-weight:600;flex-shrink:0;
+    background:rgba(111,196,177,.12);color:#8FCDBE;border:1px solid rgba(111,196,177,.35);
+  }
+  .nav-item.active .nav-num{background:var(--teal);color:#0F2635;border-color:var(--teal);}
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:30;background:rgba(245,248,247,.88);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+
+  /* ---------- Cards / Sections ---------- */
+  .panel{background:#FFFFFF;border:1px solid var(--line);border-radius:.9rem;}
+  .module-view{display:none;animation:fadeIn .35s ease;}
+  .module-view.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  .hormone-card{
+    background:#FFFFFF;border:1px solid var(--line);border-radius:.9rem;overflow:hidden;
+    transition:box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+  }
+  .hormone-card:hover{box-shadow:0 0 0 3px rgba(46,149,131,.2), 0 14px 30px -16px rgba(19,37,48,.35);border-color:var(--teal-light);}
+
+  .tab-btn{
+    padding:.42rem .85rem;font-size:.76rem;font-weight:600;border-radius:.5rem;color:var(--ink-soft);
+    cursor:pointer;transition:all .15s ease;white-space:nowrap;
+  }
+  .tab-btn.active{background:var(--navy-deep);color:#fff;}
+  .tab-btn:not(.active):hover{background:var(--paper-deep);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;animation:fadeIn .25s ease;}
+
+  .accordion-trigger{cursor:pointer;user-select:none;}
+  .accordion-trigger .chev{transition:transform .25s ease;}
+  .accordion-trigger.open .chev{transform:rotate(180deg);}
+  .accordion-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+
+  .video-frame-wrap{position:relative;padding-top:56.25%;border-radius:.8rem;overflow:hidden;background:var(--sidebar-a);}
+  .video-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+
+  .axis-flow{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:2px 2px 10px;-webkit-overflow-scrolling:touch;}
+  .axis-node{
+    background:#FFFFFF;border:1.5px solid var(--line);border-radius:.8rem;padding:.9rem 1rem;
+    min-width:170px;max-width:210px;flex:1 1 170px;position:relative;
+  }
+  .axis-arrow{display:flex;align-items:center;justify-content:center;width:44px;min-width:44px;flex:0 0 44px;color:var(--line);position:relative;overflow:visible;}
+  .axis-arrow svg{position:relative;z-index:1;}
+  .axis-arrow .arrow-glow-path{stroke:var(--teal);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;
+    stroke-dasharray:30; stroke-dashoffset:30; opacity:0;
+    animation:arrowIlluminate 2.4s ease-in-out infinite;
+    filter:drop-shadow(0 0 3px rgba(46,149,131,.85));
+  }
+  .axis-arrow .arrow-base-path{stroke:var(--line);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+  @keyframes arrowIlluminate{
+    0%{stroke-dashoffset:30;opacity:0;}
+    12%{opacity:1;}
+    55%{stroke-dashoffset:0;opacity:1;}
+    75%{opacity:1;}
+    100%{stroke-dashoffset:-30;opacity:0;}
+  }
+
+  .feedback-badge{
+    font-family:'JetBrains Mono',monospace;font-size:.63rem;letter-spacing:.03em;padding:.15rem .5rem;
+    border-radius:999px;font-weight:600;
+  }
+  .fb-neg{background:#E3ECEF;color:var(--navy-deep);}
+  .fb-pos{background:#DCF0EA;color:var(--teal-deep);}
+
+  .chip{
+    font-size:.66rem;font-weight:600;padding:.2rem .55rem;border-radius:999px;letter-spacing:.02em;
+  }
+
+  table.compare th{
+    background:var(--navy-deep);color:#EAF6F2;font-family:'Fraunces',serif;font-weight:600;font-size:.78rem;
+    padding:.7rem .9rem;text-align:left;
+  }
+  table.compare td{padding:.7rem .9rem;font-size:.83rem;border-bottom:1px solid var(--line);vertical-align:top;}
+  table.compare tr:nth-child(even) td{background:var(--paper);}
+
+  .search-hit{cursor:pointer;transition:background .12s ease;}
+  .search-hit:hover{background:var(--paper-deep);}
+
+  mark{background:var(--teal-light);color:var(--navy-deep);padding:0 .15em;border-radius:.2em;}
+
+  .hero-gradient{
+    background:
+      radial-gradient(circle at 15% 20%, rgba(111,196,177,.22), transparent 45%),
+      radial-gradient(circle at 85% 0%, rgba(27,77,110,.32), transparent 40%),
+      linear-gradient(150deg,var(--sidebar-a) 0%,var(--navy-deep) 65%,var(--sidebar-c) 100%);
+  }
+
+  .scale-in{animation:scaleIn .25s ease;}
+  @keyframes scaleIn{from{opacity:0;transform:scale(.98);}to{opacity:1;transform:scale(1);}}
+
+  .hidden-by-search{display:none !important;}
+
+  .dot-legend{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+  .snap-x{scroll-snap-type:x proximity;}
+  .snap-x > *{scroll-snap-align:start;}
+
+  .yt-btn{
+    display:inline-flex;align-items:center;gap:.5rem;background:#C4302B;color:#fff;font-weight:600;
+    padding:.62rem 1.1rem;border-radius:.6rem;font-size:.85rem;transition:filter .15s ease, transform .15s ease;
+  }
+  .yt-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
+
+  .pdf-btn{
+    display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#fff;font-weight:600;
+    padding:.62rem 1.1rem;border-radius:.6rem;font-size:.85rem;transition:filter .15s ease, transform .15s ease;
+  }
+  .pdf-btn:hover{filter:brightness(1.08);transform:translateY(-1px);}
+
+  .team-card{
+    background:#FFFFFF;border:1px solid var(--line);border-radius:.8rem;padding:1rem 1.1rem;
+    display:flex;align-items:center;gap:.85rem;transition:box-shadow .2s ease, border-color .2s ease;
+  }
+  .team-card:hover{box-shadow:0 10px 22px -14px rgba(19,37,48,.35);border-color:var(--teal-light);}
+  .team-avatar{
+    width:42px;height:42px;border-radius:50%;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(150deg,var(--navy),var(--navy-deep));
+    color:#EAF6F2;font-family:'Fraunces',serif;font-weight:700;font-size:.95rem;
+  }
+</style>
+</head>
+<body class="antialiased">
+
+<div class="app-shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside id="sidebar" class="sidebar">
+    <div class="px-6 pt-7 pb-5 border-b border-white/10 relative">
+      <button id="closeSidebar" class="absolute top-6 right-5 lg:hidden text-white/60 hover:text-white">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="flex flex-col items-center text-center">
+        <div class="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-lg" style="box-shadow:0 0 0 3px rgba(111,196,177,.35);">
+          <img src="logo.png" alt="Medicina Bajo la Lupa" class="w-[68px] h-[68px] object-contain rounded-full">
+        </div>
+        <p class="font-display font-bold text-white text-[17px] leading-tight mt-3">Medicina Bajo la Lupa</p>
+        <p class="text-[10.5px] text-[#8FCDBE] font-mono tracking-widest mt-1">SISTEMA ENDOCRINO</p>
+      </div>
+    </div>
+
+    <div class="sidebar-scroll px-3 pt-4">
+      <p class="px-3 text-[10.5px] font-mono tracking-widest text-[#8FCDBE]/70 mb-2">PROYECTO</p>
+      <nav class="flex flex-col gap-1 mb-4">
+        <div class="nav-item" data-target="about">
+          <span class="nav-num">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg>
+          </span>
+          <span class="flex-1 truncate">Quiénes somos</span>
+        </div>
+      </nav>
+
+      <p class="px-3 text-[10.5px] font-mono tracking-widest text-[#8FCDBE]/70 mb-2">MÓDULOS DE ESTUDIO</p>
+      <nav id="navList" class="flex flex-col gap-1"></nav>
+
+      <p class="px-3 text-[10.5px] font-mono tracking-widest text-[#8FCDBE]/70 mt-6 mb-2">EJE CENTRAL</p>
+      <div class="mx-1 rounded-xl bg-white/5 border border-white/10 p-3.5 text-[11.5px] leading-relaxed text-[#DCEFE9]/90">
+        Cada módulo sigue el mismo principio fisiológico: un <span class="text-white font-semibold">estímulo</span> activa una glándula, que libera una <span class="text-white font-semibold">hormona</span>, la cual actúa sobre un tejido diana y se autorregula por <span class="text-white font-semibold">retroalimentación negativa</span>.
+      </div>
+
+      <a href="https://youtube.com/@medicinabajolalupa?si=0En7JswWQjrWRH8o" target="_blank" rel="noopener"
+         class="mt-4 mx-1 flex items-center gap-3 rounded-xl border border-[#6FC4B1]/25 bg-white/5 hover:bg-white/10 transition p-3">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#FF4B45"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.4 3.5 12 3.5 12 3.5s-7.4 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c2 .6 9.4.6 9.4.6s7.4 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+        <span class="text-[11.5px] leading-tight">
+          <span class="block text-white font-semibold">Canal de YouTube</span>
+          <span class="block text-[#8FCDBE]">@medicinabajolalupa</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="px-5 py-4 border-t border-white/10 text-[10.5px] text-[#8FCDBE]/60 font-mono">
+      v2.1 · Plataforma de estudio
+    </div>
+  </aside>
+  <div id="sidebarBackdrop" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden"></div>
+
+  <!-- ============ MAIN ============ -->
+  <div class="main-area">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="flex items-center gap-3 px-4 lg:px-8 py-3.5">
+        <button id="openSidebar" class="lg:hidden text-[var(--ink)]">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
+        <div class="relative flex-1 max-w-xl mx-auto">
+          <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--ink-soft)]" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="globalSearch" type="text" placeholder="Buscar hormona, glándula o término (ej. 'cortisol', 'TSH', 'ayuno')..."
+            class="w-full pl-10 pr-9 py-2.5 rounded-xl border border-[var(--line)] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--teal)]/40 focus:border-[var(--teal)] transition">
+          <button id="clearSearch" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-[var(--ink-soft)] hover:text-[var(--ink)]">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+          <div id="searchResults" class="hidden absolute mt-2 w-full bg-white border border-[var(--line)] rounded-xl shadow-xl max-h-96 overflow-y-auto z-50"></div>
+        </div>
+
+        <a href="https://youtube.com/@medicinabajolalupa?si=0En7JswWQjrWRH8o" target="_blank" rel="noopener" class="hidden md:inline-flex yt-btn ml-auto">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.4 3.5 12 3.5 12 3.5s-7.4 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c2 .6 9.4.6 9.4.6s7.4 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+          Suscríbete
+        </a>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main id="mainContent" class="flex-1 px-4 lg:px-8 py-6 max-w-6xl w-full mx-auto">
+
+      <!-- ============ QUIÉNES SOMOS ============ -->
+      <section id="about" class="module-view">
+        <div class="hero-gradient rounded-2xl p-6 lg:p-8 mb-6 relative overflow-hidden text-center lg:text-left">
+          <div class="relative z-10 mx-auto lg:mx-0 max-w-2xl">
+            <span class="font-mono text-[11px] tracking-widest text-[#6FC4B1]">EL EQUIPO DETRÁS DEL PROYECTO</span>
+            <h2 class="font-display font-extrabold text-white text-2xl lg:text-[28px] leading-tight mt-2">Quiénes somos</h2>
+            <p class="text-[#DCEFE9]/90 text-[13.5px] mt-3 leading-relaxed">
+              <span class="font-semibold text-white">Medicina Bajo la Lupa</span> es un proyecto académico creado para explicar el
+              sistema endocrino con precisión fisiológica y un diseño pensado para el repaso activo: ejes reguladores,
+              mecanismos de acción paso a paso, correlación clínica y comparaciones lado a lado.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-5 gap-5 mb-6">
+          <div class="lg:col-span-3 panel p-5">
+            <div class="flex items-center gap-2 mb-4">
+              <span class="lens w-8 h-8" style="background:var(--paper-deep);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg>
+              </span>
+              <h3 class="font-display font-bold text-[15px]">Docente</h3>
+            </div>
+            <div class="team-card">
+              <div class="team-avatar">MF</div>
+              <div>
+                <p class="text-[14px] font-semibold text-[var(--ink)]">Mgtr. Miguel Ángel Flores Ramírez</p>
+                <p class="text-[11.5px] text-[var(--ink-soft)] mt-0.5">Curso: Recursos Digitales</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-2 panel p-5 flex flex-col">
+            <div class="flex items-center gap-2 mb-4">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#FF4B45"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.4 3.5 12 3.5 12 3.5s-7.4 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c2 .6 9.4.6 9.4.6s7.4 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+              <h3 class="font-display font-bold text-[15px]">Nuestro canal</h3>
+            </div>
+            <p class="text-[12.5px] text-[var(--ink-soft)] leading-relaxed mb-4">
+              Complementa este repaso con explicaciones en video en nuestro canal de YouTube.
+            </p>
+            <a href="https://youtube.com/@medicinabajolalupa?si=0En7JswWQjrWRH8o" target="_blank" rel="noopener" class="yt-btn justify-center mt-auto">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.4 3.5 12 3.5 12 3.5s-7.4 0-9.4.6A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c2 .6 9.4.6 9.4.6s7.4 0 9.4-.6a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+              @medicinabajolalupa
+            </a>
+          </div>
+        </div>
+
+        <div class="panel p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="lens w-8 h-8" style="background:var(--paper-deep);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 20v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </span>
+            <h3 class="font-display font-bold text-[15px]">Autoras del proyecto</h3>
+          </div>
+          <div id="teamGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+        </div>
+      </section>
+
+      <!-- Modules injected here -->
+      <div id="modulesRoot"></div>
+    </main>
+
+    <footer class="text-center text-xs text-[var(--ink-soft)] py-8 border-t border-[var(--line)] mt-6">
+      Medicina Bajo la Lupa · Plataforma interactiva de repaso de Endocrinología · Contenido con fines educativos ·
+      <a href="https://youtube.com/@medicinabajolalupa?si=0En7JswWQjrWRH8o" target="_blank" rel="noopener" class="underline hover:text-[var(--navy)]">YouTube</a>
+    </footer>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   MEDICINA BAJO LA LUPA — SISTEMA ENDOCRINO
+   SPA educativa. Todo el contenido vive en el objeto MODULES.
+   Para cambiar un video de YouTube: busca el campo "yt" dentro
+   de cada módulo (arreglo "videos") y reemplaza el ID (los 11
+   caracteres que van después de youtu.be/ o v= en la URL).
+   Para cambiar el PDF descargable de un módulo: reemplaza el
+   campo "pdf" (nombre de archivo) dentro de cada módulo.
+   ============================================================ */
+
+const TEAM = [
+  "Calle Sánchez, Dariana",
+  "Cordova Iman, Naomi",
+  "Juarez Chavez, Karen",
+  "Merino Otero, Luciana",
+  "Sánchez Córdova, Samantha",
+  "Yenque Amaya, Celeste",
+];
+
+function initials(name){
+  const last = name.split(',')[0].trim();
+  return last.slice(0,2).toUpperCase();
+}
+
+const teamGrid = document.getElementById('teamGrid');
+TEAM.forEach(name=>{
+  teamGrid.insertAdjacentHTML('beforeend', `
+    <div class="team-card">
+      <div class="team-avatar">${initials(name)}</div>
+      <div>
+        <p class="text-[13.5px] font-semibold text-[var(--ink)] leading-tight">${name}</p>
+        <p class="text-[11px] text-[var(--ink-soft)] mt-0.5">Autora</p>
+      </div>
+    </div>`);
+});
+
+const ICONS = {
+  brain: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9.5 3a3.5 3.5 0 0 0-3.5 3.5v.6A3 3 0 0 0 4 10v1a3 3 0 0 0 1 2.24V15a4 4 0 0 0 4 4h.5"/><path d="M14.5 3a3.5 3.5 0 0 1 3.5 3.5v.6A3 3 0 0 1 20 10v1a3 3 0 0 1-1 2.24V15a4 4 0 0 1-4 4h-.5"/><path d="M9.5 3v16M14.5 3v16"/></svg>`,
+  thyroid: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4c-2.5 0-4 2-4 4.5S6 12 8 12h1M16 4c2.5 0 4 2 4 4.5S18 12 16 12h-1"/><path d="M9 12v2a3 3 0 0 0 6 0v-2"/><circle cx="12" cy="17" r="2.5"/></svg>`,
+  bone: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 17c-1.4 1.4-3.6 1.4-4.6 0-1-1.1-.8-2.6.2-3.6l9.8-9.8c1-1 2.5-1.2 3.6-.2 1.4 1 1.4 3.2 0 4.6L6.2 17.8"/><circle cx="5" cy="19" r="2"/><circle cx="19" cy="5" r="2"/></svg>`,
+  pancreas: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9c3-2 6-2 8 0s5 2 8 0"/><path d="M3 9v5c3 2 6 2 8 0s5-2 8 0V9"/><circle cx="7" cy="14" r=".6" fill="currentColor"/><circle cx="12" cy="15" r=".6" fill="currentColor"/><circle cx="17" cy="14" r=".6" fill="currentColor"/></svg>`,
+  adrenal: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 4v6c0 4.5-3 7-7 8-4-1-7-3.5-7-8V7l7-4z"/><path d="M9 12l2 2 4-4"/></svg>`,
+  reproductive: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="14" r="5"/><path d="M15.5 3l4.5 4.5M20 3h-4v4"/><path d="M12.5 10.5L16 7"/></svg>`,
+  video: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 9.5l6-3v11l-6-3"/></svg>`,
+  flask: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 2v6L3.5 18a2 2 0 0 0 1.8 3h13.4a2 2 0 0 0 1.8-3L15 8V2"/><path d="M9 2h6M6.5 15h11"/></svg>`,
+  target: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg>`,
+  book: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13z"/><path d="M4 19.5V6.5"/></svg>`,
+  alert: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.6 17.5a1.6 1.6 0 0 0 1.4 2.4h16a1.6 1.6 0 0 0 1.4-2.4L13.7 3.9a1.6 1.6 0 0 0-2.8 0z"/></svg>`,
+  download: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>`,
+};
+
+/* ---------------------------------------------------------- */
+/* DATA — 6 módulos                                            */
+/* ---------------------------------------------------------- */
+const MODULES = [
+
+/* ============================================================ MÓDULO 1 */
+{
+  id:"m1", num:1, icon:"brain",
+  color:{grad:"from-blue-800 to-cyan-700", tag:"bg-[#E3ECEF] text-[var(--navy-deep)] border-[var(--navy-light)]", dot:"#1B4D6E"},
+  title:"Hormonas Hipofisarias",
+  subtitle:"El eje hipotálamo–hipófisis y sus hormonas reguladoras",
+  pdf:"guia_modulo_1_hormonas_hipofisarias.pdf",
+  intro:"La hipófisis (pituitaria) es la 'glándula directora' del sistema endocrino, pero en realidad obedece órdenes del hipotálamo. La adenohipófisis (lóbulo anterior) sintetiza y libera hormonas propias en respuesta a factores hipotalámicos que llegan por el sistema porta hipofisario; la neurohipófisis (lóbulo posterior) no fabrica hormonas, solo almacena y libera dos neurohormonas producidas en el hipotálamo.",
+  axis:[
+    {label:"Hipotálamo", sub:"Núcleos supraóptico, paraventricular y hipofisiotrópicos", fb:null},
+    {label:"Hipófisis", sub:"Neurohipófisis (libera) / Adenohipófisis (sintetiza y libera)", fb:"Retro (–)"},
+    {label:"Glándula / tejido diana", sub:"Tiroides, suprarrenal, gónadas, hueso, riñón, mama", fb:"Retro (–)"},
+    {label:"Efecto biológico", sub:"Crecimiento, metabolismo, reproducción, homeostasis hídrica", fb:null},
+  ],
+  hormones:[
+    {
+      name:"ADH (Vasopresina)", abbr:"ADH / AVP", gland:"Neurohipófisis (sintetizada en núcleo supraóptico)",
+      tag:"Péptido · Posterior",
+      summary:"Hormona antidiurética: conserva agua libre aumentando la permeabilidad del túbulo colector renal.",
+      mechanism:["Se sintetiza como preprohormona en las neuronas magnocelulares del núcleo supraóptico y paraventricular.","Viaja por el tracto hipotálamo-hipofisario dentro de gránulos junto a su proteína transportadora (neurofisina II) hasta la neurohipófisis.","Se libera a la circulación por exocitosis cuando aumenta la osmolaridad plasmática (>1-2%) o cae la volemia/presión arterial (>10%).","Se une a receptores V2 (acoplados a Gs) en las células principales del túbulo colector: activa adenilato ciclasa → AMPc → inserción de canales de acuaporina-2 en la membrana apical.","A dosis altas actúa sobre receptores V1 del músculo liso vascular (Gq) produciendo vasoconstricción."],
+      regulation:"Los osmorreceptores hipotalámicos son el estímulo más sensible (censan cambios de 1% en la osmolaridad). Los barorreceptores carotídeos y auriculares detectan hipovolemia/hipotensión y son menos sensibles pero generan una respuesta más intensa. El alcohol inhibe su liberación; el dolor, náusea y estrés la estimulan.",
+      clinical:[
+        {cond:"Diabetes insípida central", desc:"Déficit de producción/liberación de ADH → poliuria con orina muy diluida y polidipsia compensadora."},
+        {cond:"Diabetes insípida nefrogénica", desc:"El riñón no responde a la ADH (receptor V2 o acuaporina-2 defectuosos)."},
+        {cond:"SIADH", desc:"Secreción inadecuada de ADH → retención de agua libre, hiponatremia dilucional."},
+      ],
+    },
+    {
+      name:"Oxitocina", abbr:"OXT", gland:"Neurohipófisis (sintetizada en núcleo paraventricular)",
+      tag:"Péptido · Posterior",
+      summary:"Estimula la contracción del músculo liso uterino y de las células mioepiteliales mamarias.",
+      mechanism:["Sintetizada en el núcleo paraventricular, transportada junto a neurofisina I hasta la neurohipófisis.","Se une a receptores acoplados a Gq en el miometrio → activa fosfolipasa C → IP3 → liberación de Ca2+ del retículo sarcoplásmico → contracción.","En la glándula mamaria contrae las células mioepiteliales que rodean los alvéolos, produciendo el reflejo de eyección de leche."],
+      regulation:"Reflejo neuroendocrino de retroalimentación positiva: la succión del pezón (o la distensión cervicovaginal en el parto) genera impulsos aferentes que aumentan aún más su secreción hasta que cesa el estímulo. El útero se vuelve progresivamente más sensible a la oxitocina conforme aumenta la densidad de sus receptores al final del embarazo.",
+      clinical:[
+        {cond:"Uso obstétrico", desc:"Se administra de forma exógena para inducir o reforzar el trabajo de parto y prevenir hemorragia posparto."},
+        {cond:"Falla del reflejo de eyección", desc:"El estrés y el dolor pueden inhibir su liberación por vía simpática, dificultando la lactancia."},
+      ],
+    },
+    {
+      name:"Hormona de Crecimiento (GH)", abbr:"GH / somatotropina", gland:"Adenohipófisis (células somatotropas, ~50%)",
+      tag:"Proteína · Anterior",
+      summary:"Promueve el crecimiento lineal y regula el metabolismo de proteínas, lípidos y carbohidratos.",
+      mechanism:["Se une a un receptor de membrana asociado a la tirosina-cinasa JAK2 (no tiene actividad enzimática intrínseca).","La dimerización del receptor activa JAK2, que fosforila STAT5; este se transloca al núcleo y activa la transcripción génica.","Efecto directo: lipólisis, disminución de la captación de glucosa (efecto diabetogénico/anti-insulínico), síntesis proteica.","Efecto indirecto (mediado por IGF-1 hepático): estimula la proliferación del cartílago de crecimiento (condrocitos de la placa epifisaria)."],
+      regulation:"Su secreción es pulsátil, mayor durante el sueño de ondas lentas. Estimulada por GHRH, ghrelina, ejercicio, sueño profundo, hipoglucemia y estrés. Inhibida por somatostatina e IGF-1 (retroalimentación negativa larga sobre hipotálamo e hipófisis).",
+      clinical:[
+        {cond:"Gigantismo", desc:"Exceso de GH antes del cierre de las epífisis → crecimiento longitudinal excesivo."},
+        {cond:"Acromegalia", desc:"Exceso de GH en el adulto (epífisis cerradas) → crecimiento óseo transverso, visceromegalia."},
+        {cond:"Enanismo hipofisario", desc:"Déficit de GH en la infancia → talla baja proporcionada."},
+      ],
+    },
+    {
+      name:"TSH (Tirotropina)", abbr:"TSH", gland:"Adenohipófisis (células tirotropas)",
+      tag:"Glucoproteína · Anterior",
+      summary:"Estimula todas las etapas de la síntesis y liberación de hormonas tiroideas.",
+      mechanism:["Glucoproteína heterodimérica (subunidad α común a LH/FSH/hCG + subunidad β específica).","Se une a receptores Gs en la membrana basal del tirocito → activa adenilato ciclasa → AMPc.","Estimula la captación de yoduro (simportador Na+/I-), la síntesis de tiroglobulina, la organificación del yodo y la endocitosis del coloide.","Con estímulo crónico produce hipertrofia e hiperplasia del tirocito (bocio)."],
+      regulation:"Estimulada por TRH hipotalámica. Inhibida por retroalimentación negativa de T3/T4 libres directamente sobre la hipófisis (el mecanismo dominante) y sobre el hipotálamo. La somatostatina y la dopamina también la inhiben.",
+      clinical:[
+        {cond:"Hipotiroidismo primario", desc:"TSH elevada con T4 libre baja (la glándula tiroides falla y no hay freno de retroalimentación)."},
+        {cond:"Hipertiroidismo por enfermedad de Graves", desc:"TSH suprimida por anticuerpos que estimulan directamente el receptor de TSH (TSI)."},
+      ],
+    },
+    {
+      name:"ACTH (Corticotropina)", abbr:"ACTH", gland:"Adenohipófisis (células corticotropas)",
+      tag:"Péptido · Anterior",
+      summary:"Estimula la síntesis de esteroides en la corteza suprarrenal, principalmente cortisol.",
+      mechanism:["Deriva del precursor POMC (proopiomelanocortina), que también genera β-lipotropina y MSH.","Se une a receptores de melanocortina tipo 2 (MC2R) acoplados a Gs en la corteza suprarrenal → AMPc → activación de proteína cinasa A.","Estimula la conversión de colesterol a pregnenolona (enzima limitante, StAR/CYP11A1) principalmente en la zona fascicular.","Con estimulación crónica produce hipertrofia de la corteza suprarrenal."],
+      regulation:"Controlada por CRH hipotalámica y por el ritmo circadiano (pico matutino, nadir nocturno). El cortisol ejerce retroalimentación negativa sobre hipotálamo e hipófisis. El estrés físico y psicológico son potentes estimulantes.",
+      clinical:[
+        {cond:"Enfermedad de Cushing", desc:"Adenoma hipofisario secretor de ACTH → hipercortisolismo secundario."},
+        {cond:"Enfermedad de Addison", desc:"ACTH muy elevada (sin freno) por falla primaria de la suprarrenal; la hiperpigmentación se debe al exceso de POMC/MSH."},
+      ],
+    },
+    {
+      name:"FSH (Foliculoestimulante)", abbr:"FSH", gland:"Adenohipófisis (células gonadotropas)",
+      tag:"Glucoproteína · Anterior",
+      summary:"En la mujer estimula el crecimiento folicular; en el hombre estimula la espermatogénesis (células de Sertoli).",
+      mechanism:["Se une a receptores Gs específicos en las células de la granulosa (mujer) o de Sertoli (hombre).","En la mujer induce la expresión de aromatasa, convirtiendo andrógenos en estrógenos dentro del folículo en desarrollo.","En el hombre estimula la producción de proteína ligadora de andrógenos (ABP) e inhibina B por las células de Sertoli."],
+      regulation:"Estimulada por GnRH pulsátil. Inhibida selectivamente por la inhibina (de células de la granulosa o de Sertoli) y, junto con LH, por estrógenos/testosterona en retroalimentación negativa clásica.",
+      clinical:[
+        {cond:"Hipogonadismo hipergonadotrópico", desc:"FSH elevada cuando falla la gónada (p. ej. menopausia, síndrome de Klinefelter)."},
+        {cond:"Hipogonadismo hipogonadotrópico", desc:"FSH baja por falla hipotalámica/hipofisaria (p. ej. síndrome de Kallmann)."},
+      ],
+    },
+    {
+      name:"LH (Luteinizante)", abbr:"LH", gland:"Adenohipófisis (células gonadotropas)",
+      tag:"Glucoproteína · Anterior",
+      summary:"Desencadena la ovulación y mantiene el cuerpo lúteo; estimula a las células de Leydig a producir testosterona.",
+      mechanism:["En la mujer, el pico preovulatorio de LH (retroalimentación positiva por estrógeno alto y sostenido) desencadena la ruptura folicular y la ovulación.","Convierte el folículo residual en cuerpo lúteo, que secreta progesterona.","En el hombre, se une a receptores Gs en las células de Leydig → AMPc → estimula la conversión de colesterol a testosterona."],
+      regulation:"Pulsátil, dependiente de GnRH. Inhibida por progesterona y estrógeno en fase lútea/testosterona en el hombre (retroalimentación negativa); el estrógeno en concentración alta y sostenida (folículo dominante) genera el único ejemplo clásico de retroalimentación positiva del eje.",
+      clinical:[
+        {cond:"Síndrome de ovario poliquístico", desc:"Relación LH/FSH elevada, anovulación crónica."},
+        {cond:"Uso en fertilidad", desc:"Análogos de LH/hCG se usan para desencadenar la ovulación en tratamientos de reproducción asistida."},
+      ],
+    },
+    {
+      name:"Prolactina", abbr:"PRL", gland:"Adenohipófisis (células lactotropas)",
+      tag:"Proteína · Anterior",
+      summary:"Estimula el desarrollo mamario y la producción (no la eyección) de leche; inhibe el eje reproductivo durante la lactancia.",
+      mechanism:["Es la única hormona hipofisaria bajo control tónico inhibitorio predominante: la dopamina hipotalámica (factor inhibidor de prolactina) suprime constantemente su liberación.","Se une a receptores de citocina de clase I (vía JAK2/STAT5), similar a GH, en el epitelio alveolar mamario.","Estimula la síntesis de caseína y lactosa, preparando la glándula para la lactogénesis."],
+      regulation:"La succión del pezón inhibe la liberación de dopamina → aumenta la prolactina. TRH también la estimula (por eso el hipotiroidismo puede cursar con hiperprolactinemia). El propio estrógeno estimula su síntesis durante el embarazo. La hiperprolactinemia inhibe la GnRH, suprimiendo el eje gonadal (amenorrea de la lactancia).",
+      clinical:[
+        {cond:"Prolactinoma", desc:"Adenoma hipofisario secretor; causa amenorrea-galactorrea en la mujer y disfunción eréctil/infertilidad en el hombre."},
+        {cond:"Hiperprolactinemia por fármacos", desc:"Antipsicóticos (antagonistas de dopamina) elevan la prolactina al bloquear su inhibición tónica."},
+      ],
+    },
+  ],
+  comparison:{
+    title:"Neurohipófisis vs. Adenohipófisis",
+    headers:["Característica","Neurohipófisis (posterior)","Adenohipófisis (anterior)"],
+    rows:[
+      ["Origen embriológico","Neuroectodermo (extensión del hipotálamo)","Ectodermo oral (bolsa de Rathke)"],
+      ["¿Sintetiza hormonas?","No, solo almacena y libera","Sí, sintetiza y libera"],
+      ["Conexión con hipotálamo","Tracto neural directo (axones)","Sistema porta hipofisario (vasos)"],
+      ["Hormonas","ADH, Oxitocina","GH, TSH, ACTH, FSH, LH, Prolactina"],
+      ["Regulación","Impulsos neuronales directos","Factores liberadores/inhibidores hipotalámicos"],
+    ],
+  },
+  videos:[
+    {t:"Hipotálamo e hipófisis: anatomía funcional", yt:"eib_ejTn5qo"},
+    {t:"Regulación hormonal hipofisaria", yt:"dy691FNHZSI"},
+  ],
+},
+
+/* ============================================================ MÓDULO 2 */
+{
+  id:"m2", num:2, icon:"thyroid",
+  color:{grad:"from-teal-700 to-cyan-600", tag:"bg-[#DCF0EA] text-[var(--teal-deep)] border-[var(--teal-light)]", dot:"#20705F"},
+  title:"Hormonas Tiroideas",
+  subtitle:"Regulación del metabolismo: T3, T4, yodo, tiroglobulina y calcitonina",
+  pdf:"guia_modulo_2_hormonas_tiroideas.pdf",
+  intro:"La glándula tiroides es el gran regulador del gasto energético basal. Sus folículos captan yodo y lo incorporan a la tiroglobulina para fabricar T4 y T3, mientras que las células parafoliculares (C) secretan calcitonina, una hormona independiente del eje hipotálamo-hipófisis-tiroides que participa en la homeostasis del calcio.",
+  axis:[
+    {label:"Hipotálamo", sub:"TRH", fb:null},
+    {label:"Adenohipófisis", sub:"TSH", fb:"Retro (–)"},
+    {label:"Tiroides", sub:"Capta yodo → sintetiza T4 (93%) y T3 (7%)", fb:"Retro (–)"},
+    {label:"Tejidos periféricos", sub:"↑ Metabolismo basal, crecimiento, termogénesis", fb:null},
+  ],
+  hormones:[
+    {
+      name:"Tiroxina (T4) y Triyodotironina (T3)", abbr:"T4 / T3", gland:"Tirocitos foliculares",
+      tag:"Amina yodada",
+      summary:"T4 es la prohormona circulante mayoritaria; T3 es la forma biológicamente activa, generada por desyodación periférica.",
+      mechanism:["La T4 (tiroxina) representa cerca del 93% de la secreción tiroidea y actúa como reservorio circulante; la T3 es 3-4 veces más potente y se une a los receptores nucleares con una afinidad hasta 10 veces mayor.","Las desyodinasas periféricas (DIO1 y DIO2) convierten T4 en T3 activa en tejidos como hígado, riñón y músculo; la DIO3 inactiva ambas hormonas generando T3 reversa (rT3) y 3,3'-T2.","Ambas hormonas circulan unidas en gran parte a proteínas transportadoras (TBG, transtiretina, albúmina); solo la fracción libre (T4 libre, T3 libre) es biológicamente activa.","Dentro de la célula diana, la T3 se une a los receptores nucleares TRα y TRβ, que heterodimerizan con el receptor de ácido retinoico X (RXR) y regulan la transcripción de genes con elementos de respuesta a hormona tiroidea (TRE).","También existen acciones no genómicas, rápidas, que no requieren unión nuclear directa."],
+      regulation:"El eje hipotálamo-hipófisis-tiroides (HPT) mantiene niveles estables mediante retroalimentación negativa: T3/T4 libres inhiben la liberación de TRH y, sobre todo, de TSH. El frío, el estrés y ciertos estados de balance energético modulan al eje a nivel hipotalámico.",
+      clinical:[
+        {cond:"Hipertiroidismo", desc:"Estado hipermetabólico: mayor gasto energético en reposo, pérdida de peso, taquicardia, intolerancia al calor, colesterol bajo."},
+        {cond:"Hipotiroidismo", desc:"Estado hipometabólico: menor gasto energético, aumento de peso, bradicardia, intolerancia al frío, colesterol elevado."},
+        {cond:"Termogénesis adaptativa", desc:"Las hormonas tiroideas estimulan el 'pardeamiento' del tejido adiposo blanco, aumentando la expresión de UCP1 y el gasto calórico mediado por el tejido adiposo marrón."},
+      ],
+    },
+    {
+      name:"Yodo y Tiroglobulina", abbr:"I⁻ / Tg", gland:"Tirocitos foliculares / coloide",
+      tag:"Sustrato · Proteína matriz",
+      summary:"El yodo es el sustrato esencial de la hormonogénesis; la tiroglobulina es la proteína matriz donde se sintetizan y almacenan T3 y T4.",
+      mechanism:["El yoduro plasmático se capta activamente contra gradiente mediante el simportador de sodio/yoduro (NIS) en la membrana basolateral del tirocito.","En la membrana apical, la pendrina transporta el yoduro hacia el coloide, donde la tiroperoxidasa (TPO) lo oxida y lo organifica sobre los residuos de tirosina de la tiroglobulina (organificación).","Se forman monoyodotirosina (MIT) y diyodotirosina (DIT); su acoplamiento enzimático genera T3 (MIT+DIT) y T4 (DIT+DIT), que permanecen almacenadas dentro de la tiroglobulina en el coloide folicular.","Ante estímulo de TSH, gotas de coloide son endocitadas y digeridas por proteasas lisosomales, liberando T3 y T4 libres a la circulación; el yodo remanente se recicla mediante la desyodinasa DEHAL1."],
+      regulation:"La disponibilidad de yodo regula la propia captación tiroidea: el exceso agudo de yodo inhibe transitoriamente la organificación (efecto Wolff-Chaikoff), un mecanismo protector frente a sobrecarga.",
+      clinical:[
+        {cond:"Bocio endémico por déficit de yodo", desc:"La falta de sustrato reduce la síntesis hormonal; la TSH compensadora produce hiperplasia glandular (bocio)."},
+        {cond:"Tiroglobulina como marcador tumoral", desc:"Se utiliza para el seguimiento de pacientes tiroidectomizados por cáncer diferenciado de tiroides."},
+      ],
+    },
+    {
+      name:"Calcitonina", abbr:"CT", gland:"Células parafoliculares (células C) de la tiroides",
+      tag:"Péptido · Independiente del eje HPT",
+      summary:"Hormona hipocalcemiante: inhibe la actividad osteoclástica y reduce la resorción ósea.",
+      mechanism:["Se libera cuando aumenta la concentración plasmática de calcio, detectada por el receptor sensor de calcio (CaSR) de las células C.","Se une al receptor de calcitonina (CTR), un receptor acoplado a proteína G de la familia de 7 dominios transmembrana (comparte familia con los receptores de glucagón y secretina).","Inhibe directamente la actividad de los osteoclastos maduros, disminuyendo la resorción ósea y el paso de calcio del hueso a la sangre.","A nivel renal reduce discretamente la reabsorción tubular de calcio y fosfato."],
+      regulation:"Estimulada de forma directa por la hipercalcemia (no depende de TSH ni de retroalimentación hipotálamo-hipofisaria); su papel fisiológico en el adulto humano es modesto comparado con PTH y calcitriol, pero su ausencia (tras tiroidectomía total) no provoca alteraciones significativas del calcio.",
+      clinical:[
+        {cond:"Carcinoma medular de tiroides", desc:"Tumor de células C que hipersecreta calcitonina; se usa como marcador diagnóstico y de seguimiento."},
+        {cond:"Uso terapéutico", desc:"La calcitonina exógena (salmón) se emplea en el tratamiento de la osteoporosis y la enfermedad de Paget por su efecto antirresortivo."},
+      ],
+    },
+  ],
+  comparison:{
+    title:"Hipertiroidismo vs. Hipotiroidismo",
+    headers:["Parámetro","Hipertiroidismo","Hipotiroidismo"],
+    rows:[
+      ["TSH (primario)","Baja (suprimida)","Elevada"],
+      ["T3/T4 libres","Elevadas","Bajas"],
+      ["Metabolismo basal","Aumentado","Disminuido"],
+      ["Peso corporal","Pérdida de peso","Ganancia de peso"],
+      ["Frecuencia cardiaca","Taquicardia","Bradicardia"],
+      ["Tolerancia a la temperatura","Intolerancia al calor","Intolerancia al frío"],
+      ["Perfil lipídico","Colesterol bajo","Colesterol elevado"],
+      ["Ejemplo clásico","Enfermedad de Graves","Tiroiditis de Hashimoto"],
+    ],
+  },
+  videos:[
+    {t:"Hormonas tiroideas: síntesis y regulación", yt:"04MxquGVDAc"},
+    {t:"Eje hipotálamo-hipófisis-tiroides", yt:"I7oKKRGISBs"},
+    {t:"Calcitonina y homeostasis del calcio", yt:"SM1M74eIuAg"},
+  ],
+},
+
+/* ============================================================ MÓDULO 3 */
+{
+  id:"m3", num:3, icon:"bone",
+  color:{grad:"from-sky-700 to-blue-600", tag:"bg-[#EAF1EF] text-[var(--teal)] border-[var(--teal-light)]", dot:"#2E9583"},
+  title:"Calcio y Fósforo",
+  subtitle:"PTH, calcitriol (vitamina D) y homeostasis mineral ósea",
+  pdf:"guia_modulo_3_calcio_fosforo.pdf",
+  intro:"El 99% del calcio corporal está en el esqueleto, pero es el 1% circulante el que resulta vital para la coagulación, la contracción muscular y la excitabilidad neuronal. Tres hormonas —PTH, calcitriol y calcitonina— actúan en conjunto sobre hueso, riñón e intestino para mantener la calcemia dentro de un rango extremadamente estrecho (≈10 mg/dL).",
+  axis:[
+    {label:"↓ Calcio plasmático", sub:"Detectado por el CaSR de la paratiroides", fb:null},
+    {label:"Glándulas paratiroides", sub:"Secretan PTH", fb:"Retro (–)"},
+    {label:"Hueso / Riñón / Intestino", sub:"PTH moviliza Ca del hueso, ahorra Ca renal y activa vitamina D", fb:null},
+    {label:"↑ Calcio plasmático", sub:"Se restaura la homeostasis; inhibe nueva secreción de PTH", fb:null},
+  ],
+  hormones:[
+    {
+      name:"Hormona Paratiroidea", abbr:"PTH", gland:"Glándulas paratiroides (células principales)",
+      tag:"Péptido · Hipercalcemiante",
+      summary:"Principal regulador minuto a minuto del calcio: moviliza calcio del hueso, ahorra calcio renal y activa la vitamina D.",
+      mechanism:["Las células principales detectan la calcemia mediante el receptor sensor de calcio (CaSR); una caída del calcio ionizado dispara la secreción de PTH.","Se une a receptores PTH1R (Gs/Gq) en osteoblastos: estimula indirectamente a los osteoclastos aumentando la expresión de RANKL y disminuyendo la osteoprotegerina (OPG), incrementando la resorción ósea y liberando calcio y fosfato a la sangre.","En el túbulo renal distal aumenta la reabsorción de calcio (vía canal TRPV5) y en el túbulo proximal inhibe la reabsorción de fosfato, favoreciendo su excreción (efecto fosfatúrico).","Estimula la enzima 1α-hidroxilasa renal, que convierte el calcidiol en calcitriol (forma activa de la vitamina D), amplificando indirectamente la absorción intestinal de calcio."],
+      regulation:"Retroalimentación negativa directa por la propia calcemia a través del CaSR: la hipercalcemia inhibe la secreción de PTH y viceversa. La hipomagnesemia grave paradójicamente puede inhibir su secreción.",
+      clinical:[
+        {cond:"Hiperparatiroidismo primario", desc:"Adenoma paratiroideo → PTH y calcio elevados, fósforo bajo."},
+        {cond:"Hipoparatiroidismo", desc:"Déficit de PTH (a menudo posquirúrgico) → hipocalcemia, tetania hipocalcémica, espasmo laríngeo."},
+        {cond:"Hiperparatiroidismo secundario", desc:"Respuesta compensadora al déficit crónico de vitamina D o a la insuficiencia renal."},
+      ],
+    },
+    {
+      name:"Calcitriol (Vitamina D activa)", abbr:"1,25-(OH)₂D₃", gland:"Piel → hígado → riñón (hormona esteroidea)",
+      tag:"Esteroide · Hipercalcemiante",
+      summary:"Aumenta principalmente la absorción intestinal de calcio y fósforo; en conjunto con PTH mineraliza el hueso.",
+      mechanism:["La piel sintetiza colecalciferol (vitamina D3) a partir de 7-dehidrocolesterol por acción de la radiación UVB (también se obtiene de la dieta).","El hígado la hidroxila a calcidiol (25-hidroxivitamina D), la forma circulante de reserva usada para medir el estado de vitamina D.","El riñón, mediante la 1α-hidroxilasa (estimulada por PTH y por la hipofosfatemia), genera calcitriol (1,25-dihidroxivitamina D), la forma hormonal activa.","El calcitriol se une a un receptor nuclear (VDR) en el enterocito, que heterodimeriza con RXR e induce la expresión de proteínas transportadoras de calcio, entre ellas los canales TRPV6 y la calbindina-D9k, aumentando la absorción intestinal de calcio.","También favorece la absorción intestinal de fosfato y, junto con la PTH, permite la mineralización adecuada de la matriz ósea."],
+      regulation:"Estimulada por PTH, hipocalcemia e hipofosfatemia. El propio calcitriol inhibe su producción por retroalimentación negativa sobre la 1α-hidroxilasa y suprime la secreción de PTH.",
+      clinical:[
+        {cond:"Raquitismo (niño) / Osteomalacia (adulto)", desc:"Déficit de vitamina D → mineralización ósea deficiente."},
+        {cond:"Insuficiencia renal crónica", desc:"Disminuye la 1α-hidroxilación renal → déficit de calcitriol → hipocalcemia e hiperparatiroidismo secundario."},
+      ],
+    },
+    {
+      name:"Homeostasis integrada del calcio", abbr:"Ca²⁺ / Pi", gland:"Sistema hueso–riñón–intestino",
+      tag:"Fisiología de sistemas",
+      summary:"El calcio plasmático (~10 mg/dL) refleja el balance dinámico entre entrada intestinal, depósito/movilización óseo y excreción renal.",
+      mechanism:["El calcio ionizado (Ca²⁺) es la fracción libre y biológicamente activa; el resto circula unido a proteínas plasmáticas (principalmente albúmina) o formando complejos con aniones.","El descenso agudo del calcio ionizado extracelular aumenta la excitabilidad neuromuscular, pudiendo producir tetania hipocalcémica (espasmo carpopedal, laringoespasmo).","El fosfato es fundamental como componente del ATP, del AMPc y de numerosas proteínas fosforiladas; su regulación está estrechamente ligada, aunque a veces de forma recíproca, a la del calcio.","El hueso actúa como el gran reservorio de intercambio: aproximadamente el 99% del calcio corporal total se encuentra en el esqueleto."],
+      regulation:"Los tres ejes —PTH, calcitriol y calcitonina— operan de forma coordinada; PTH y calcitriol son hipercalcemiantes y actúan de forma sinérgica (PTH activa a la vitamina D), mientras que la calcitonina es hipocalcemiante y actúa como contrapeso, principalmente frente a hipercalcemias agudas.",
+      clinical:[
+        {cond:"Tetania hipocalcémica", desc:"Signo de Chvostek y signo de Trousseau positivos como manifestaciones clínicas de hipocalcemia."},
+        {cond:"Crisis hipercalcémica", desc:"Puede cursar con poliuria, estreñimiento, confusión y, en casos graves, arritmias."},
+      ],
+    },
+  ],
+  comparison:{
+    title:"PTH vs. Calcitriol vs. Calcitonina",
+    headers:["Característica","PTH","Calcitriol","Calcitonina"],
+    rows:[
+      ["Origen","Paratiroides","Piel/hígado/riñón","Células C tiroideas"],
+      ["Efecto sobre calcemia","↑ (hipercalcemiante)","↑ (hipercalcemiante)","↓ (hipocalcemiante)"],
+      ["Efecto óseo","↑ Resorción (vía RANKL)","Favorece mineralización","↓ Resorción (inhibe osteoclastos)"],
+      ["Efecto renal","↑ Reabsorción de Ca / ↑ excreción de fosfato","↑ Activación (1α-hidroxilasa)","Discreto ↓ reabsorción de Ca"],
+      ["Efecto intestinal","Indirecto (vía vitamina D)","↑↑ Absorción de Ca y fosfato","Mínimo"],
+      ["Estímulo principal","↓ Calcio plasmático","PTH, ↓ fosfato","↑ Calcio plasmático"],
+    ],
+  },
+  videos:[
+    {t:"Metabolismo del calcio y el fósforo", yt:"eib_ejTn5qo"},
+    {t:"PTH, vitamina D y fisiología ósea", yt:"dy691FNHZSI"},
+  ],
+},
+
+/* ============================================================ MÓDULO 4 */
+{
+  id:"m4", num:4, icon:"pancreas",
+  color:{grad:"from-emerald-700 to-teal-600", tag:"bg-[#DCF0EA] text-[var(--teal-deep)] border-[var(--teal-light)]", dot:"#20705F"},
+  title:"Hormonas Pancreáticas",
+  subtitle:"Insulina, glucagón y somatostatina: el control de la glucemia",
+  pdf:"guia_modulo_4_hormonas_pancreaticas.pdf",
+  intro:"Los islotes de Langerhans son las unidades endocrinas del páncreas. Contienen al menos cuatro tipos celulares: células B (insulina), células A (glucagón), células D (somatostatina) y células PP (polipéptido pancreático). Insulina y glucagón son antagonistas fisiológicos que mantienen la glucemia estable entre el estado de ayuno y el posprandial.",
+  axis:[
+    {label:"↑ Glucosa (posprandial)", sub:"Estímulo directo sobre células B", fb:null},
+    {label:"Células B (islotes)", sub:"Liberan insulina", fb:"Retro (–)"},
+    {label:"Hígado, músculo, tejido adiposo", sub:"↑ Captación y almacenamiento de glucosa", fb:null},
+    {label:"↓ Glucosa (normaliza)", sub:"Se apaga el estímulo de insulina; en ayuno domina el glucagón", fb:null},
+  ],
+  hormones:[
+    {
+      name:"Insulina", abbr:"INS", gland:"Células B de los islotes de Langerhans",
+      tag:"Hormona anabólica",
+      summary:"Hormona anabólica por excelencia: incrementa el almacenamiento de glucosa, ácidos grasos y aminoácidos.",
+      mechanism:["Se sintetiza como preproinsulina, se procesa a proinsulina y finalmente se escinde en insulina madura + péptido C, que se liberan en cantidades equimolares (el péptido C es un marcador útil de secreción endógena).","El estímulo clave es el aumento de la glucosa plasmática: la glucosa entra a la célula B por el transportador GLUT2, se metaboliza y aumenta la relación ATP/ADP, lo que cierra los canales de K+ sensibles a ATP, despolariza la membrana, abre canales de Ca2+ dependientes de voltaje y dispara la exocitosis de los gránulos de insulina.","Se une a un receptor tirosina-cinasa (receptor de insulina): la autofosforilación activa la vía de los sustratos del receptor de insulina (IRS) y la cascada PI3K/Akt.","Su efecto más característico es la translocación de los transportadores GLUT4 a la membrana en músculo esquelético y tejido adiposo, aumentando la captación de glucosa.","A nivel hepático inhibe la gluconeogénesis y la glucogenólisis, y estimula la glucogénesis, la lipogénesis y la síntesis proteica."],
+      regulation:"Estimulada principalmente por hiperglucemia; también por aminoácidos, ácidos grasos, hormonas incretinas intestinales (GLP-1, GIP) y estimulación vagal (parasimpática). Inhibida por la hipoglucemia, la somatostatina y la estimulación simpática (adrenalina, vía receptores α2).",
+      clinical:[
+        {cond:"Diabetes mellitus tipo 1", desc:"Destrucción autoinmune de las células B → deficiencia absoluta de insulina."},
+        {cond:"Diabetes mellitus tipo 2", desc:"Resistencia periférica a la insulina con deficiencia relativa progresiva."},
+        {cond:"Hipoglucemia por exceso de insulina", desc:"Puede provocar convulsiones y coma si no se corrige a tiempo."},
+      ],
+    },
+    {
+      name:"Glucagón", abbr:"GCG", gland:"Células A de los islotes de Langerhans",
+      tag:"Hormona catabólica",
+      summary:"Hormona catabólica: moviliza la glucosa, los ácidos grasos y los aminoácidos almacenados hacia la circulación.",
+      mechanism:["Se libera en respuesta a la hipoglucemia, siendo la principal hormona contrarreguladora de defensa inmediata frente a caídas de la glucosa.","Se une a un receptor Gs en el hepatocito → activa adenilato ciclasa → AMPc → proteína cinasa A.","Activa la glucógeno fosforilasa e inhibe la glucógeno sintasa, estimulando la glucogenólisis hepática.","Estimula la gluconeogénesis a partir de aminoácidos glucogénicos y de lactato, y activa la lipólisis y la cetogénesis en situaciones de ayuno prolongado.","Su acción es predominantemente hepática; el músculo esquelético carece de receptores relevantes de glucagón."],
+      regulation:"Estimulado por hipoglucemia, aminoácidos (sobre todo tras una comida rica en proteínas, evitando así que la insulina provoque hipoglucemia), ejercicio y estimulación simpática. Inhibido por hiperglucemia, insulina y somatostatina.",
+      clinical:[
+        {cond:"Papel en el ayuno", desc:"Durante el ayuno prolongado, el glucagón sostiene la glucemia movilizando reservas hepáticas y promoviendo cetogénesis como combustible alternativo."},
+        {cond:"Glucagonoma", desc:"Tumor secretor de células A; produce hiperglucemia y un exantema característico (eritema necrolítico migratorio)."},
+        {cond:"Uso de emergencia", desc:"El glucagón inyectable se utiliza para revertir rápidamente la hipoglucemia grave."},
+      ],
+    },
+    {
+      name:"Somatostatina", abbr:"SST", gland:"Células D de los islotes de Langerhans",
+      tag:"Hormona reguladora paracrina",
+      summary:"Actúa como freno paracrino local: inhibe tanto la secreción de insulina como la de glucagón.",
+      mechanism:["Se secreta en respuesta a la ingestión de casi todos los tipos de nutrientes (glucosa, aminoácidos, ácidos grasos).","Actúa de manera predominantemente paracrina (difundiendo dentro del propio islote) inhibiendo la liberación tanto de insulina (células B) como de glucagón (células A) mediante receptores acoplados a Gi.","También reduce la motilidad gastrointestinal y la secreción de numerosas hormonas digestivas, lentificando así la absorción de nutrientes."],
+      regulation:"Su liberación está acoplada a la llegada de nutrientes desde el tubo digestivo, actuando como un 'amortiguador' que suaviza los picos de insulina y glucagón tras la comida.",
+      clinical:[
+        {cond:"Exceso de somatostatina pancreática", desc:"Puede producir un cuadro de hiperglucemia y otras manifestaciones similares a la diabetes, al suprimir de forma sostenida la secreción de insulina."},
+        {cond:"Uso terapéutico (análogos)", desc:"Octreótido y análogos se emplean para inhibir la secreción hormonal en tumores neuroendocrinos y en el manejo de várices esofágicas."},
+      ],
+    },
+  ],
+  comparison:{
+    title:"Insulina vs. Glucagón (antagonistas fisiológicos)",
+    headers:["Característica","Insulina","Glucagón"],
+    rows:[
+      ["Célula de origen","Célula B","Célula A"],
+      ["Estímulo principal","Hiperglucemia (posprandial)","Hipoglucemia (ayuno)"],
+      ["Tipo de acción","Anabólica","Catabólica"],
+      ["Glucógeno hepático","Estimula síntesis (glucogénesis)","Estimula degradación (glucogenólisis)"],
+      ["Gluconeogénesis","Inhibe","Estimula"],
+      ["Efecto sobre lípidos","Estimula lipogénesis, inhibe lipólisis","Estimula lipólisis y cetogénesis"],
+      ["Estado metabólico asociado","Alimentación","Ayuno"],
+    ],
+  },
+  videos:[
+    {t:"Regulación de la glucemia", yt:"Lfoo_Bk_6Qk"},
+    {t:"Función y anatomía del páncreas: islotes de Langerhans", yt:"VfRSTIMeHmY"},
+    {t:"Insulina: mecanismos de secreción", yt:"4GBaHhPZXos"},
+    {t:"Papel del glucagón durante el ayuno", yt:"l3Bs7z_zA6o"},
+    {t:"Diabetes mellitus: generalidades", yt:"wdQ_ObseLAU"},
+    {t:"Fisiopatología de la diabetes mellitus", yt:"eCV12CqZ64c"},
+  ],
+},
+
+/* ============================================================ MÓDULO 5 */
+{
+  id:"m5", num:5, icon:"adrenal",
+  color:{grad:"from-amber-700 to-orange-600", tag:"bg-[#EAF1EF] text-[var(--teal)] border-[var(--teal-light)]", dot:"#2E9583"},
+  title:"Hormonas Suprarrenales",
+  subtitle:"Cortisol, aldosterona, catecolaminas y el eje HPA",
+  pdf:"guia_modulo_5_hormonas_suprarrenales.pdf",
+  intro:"Las glándulas suprarrenales, situadas sobre los polos superiores de los riñones, tienen dos regiones con orígenes y funciones completamente distintas: la corteza (mesodérmica) secreta esteroides organizados en tres zonas —glomerular (mineralocorticoides), fascicular (glucocorticoides) y reticular (andrógenos)—; la médula (neuroectodérmica) es funcionalmente una extensión del sistema nervioso simpático y secreta catecolaminas.",
+  axis:[
+    {label:"Hipotálamo", sub:"CRH (+ ritmo circadiano)", fb:null},
+    {label:"Adenohipófisis", sub:"ACTH", fb:"Retro (–)"},
+    {label:"Corteza suprarrenal", sub:"Cortisol (zona fascicular)", fb:"Retro (–)"},
+    {label:"Respuesta al estrés", sub:"↑ Glucosa, catabolismo, inmunosupresión, permisividad vascular", fb:null},
+  ],
+  hormones:[
+    {
+      name:"Cortisol", abbr:"—", gland:"Corteza suprarrenal — zona fascicular",
+      tag:"Glucocorticoide",
+      summary:"Principal glucocorticoide humano; hormona catabólica de adaptación al estrés y al ayuno prolongado.",
+      mechanism:["Su síntesis es estimulada por ACTH, que activa la conversión de colesterol a pregnenolona (paso limitante, mediado por la proteína StAR y la enzima CYP11A1) en la mitocondria de la célula fascicular.","Por ser una hormona esteroidea liposoluble, circula mayoritariamente unida a la globulina transportadora de corticosteroides (CBG) y difunde libremente a través de la membrana celular.","Se une a receptores citoplasmáticos de glucocorticoides; el complejo hormona-receptor se transloca al núcleo y regula la transcripción de múltiples genes diana.","Metabólicamente estimula la gluconeogénesis hepática, el catabolismo proteico muscular y la lipólisis, elevando la glucosa disponible (efecto 'permisivo' e hiperglucemiante).","Ejerce potente efecto antiinflamatorio e inmunosupresor, y es esencial para la respuesta cardiovascular al estrés (efecto permisivo sobre catecolaminas)."],
+      regulation:"Sigue un ritmo circadiano marcado (pico matutino, nadir nocturno), sobreañadido a los pulsos de CRH/ACTH. Ejerce retroalimentación negativa sobre el hipotálamo (CRH) y la hipófisis (ACTH). El estrés físico y psicológico anula transitoriamente el ritmo circadiano y aumenta su secreción.",
+      clinical:[
+        {cond:"Síndrome de Cushing", desc:"Exceso crónico de cortisol (endógeno o exógeno): obesidad centrípeta, estrías violáceas, hiperglucemia, hipertensión."},
+        {cond:"Enfermedad de Addison", desc:"Insuficiencia suprarrenal primaria: déficit de cortisol y aldosterona, hipotensión, hiperpigmentación cutánea."},
+      ],
+    },
+    {
+      name:"Aldosterona", abbr:"—", gland:"Corteza suprarrenal — zona glomerular",
+      tag:"Mineralocorticoide",
+      summary:"Principal mineralocorticoide: regula el balance de sodio, potasio y el volumen extracelular.",
+      mechanism:["Su síntesis depende de la enzima aldosterona sintasa (CYP11B2), exclusiva de la zona glomerular.","Se une a receptores mineralocorticoides citoplasmáticos en las células principales del túbulo colector renal.","El complejo hormona-receptor induce la síntesis de canales de sodio epiteliales (ENaC) en la membrana apical y de bombas Na+/K+-ATPasa en la membrana basolateral.","El resultado neto es reabsorción de sodio (y agua) y secreción de potasio e hidrogeniones hacia la luz tubular."],
+      regulation:"Regulada principalmente por el sistema renina-angiotensina-aldosterona (SRAA): la disminución de la presión de perfusión renal libera renina, que genera angiotensina I y luego angiotensina II (potente estimulante de la aldosterona). También se estimula directamente por la hiperpotasemia. A diferencia del cortisol, depende poco de ACTH en condiciones basales.",
+      clinical:[
+        {cond:"Hiperaldosteronismo primario (Síndrome de Conn)", desc:"Hipertensión arterial con hipopotasemia y renina suprimida."},
+        {cond:"Insuficiencia suprarrenal", desc:"El déficit de aldosterona contribuye a la hipotensión y la hiperpotasemia de la enfermedad de Addison."},
+      ],
+    },
+    {
+      name:"Adrenalina y Noradrenalina", abbr:"Epinefrina / Norepinefrina", gland:"Médula suprarrenal (células cromafines)",
+      tag:"Catecolaminas",
+      summary:"Mediadoras de la respuesta 'lucha o huida': la médula sintetiza ~80% adrenalina y ~20% noradrenalina.",
+      mechanism:["La médula suprarrenal deriva embriológicamente de células neuroectodérmicas y es funcionalmente análoga a una neurona posganglionar simpática, con la diferencia de que sus catecolaminas actúan como hormonas circulantes en lugar de neurotransmisores locales.","Las fibras simpáticas preganglionares hacen sinapsis directa sobre las células cromafines (sin relevo ganglionar), liberando acetilcolina que dispara la exocitosis de catecolaminas almacenadas en gránulos cromafines.","La conversión final de noradrenalina a adrenalina depende de la enzima feniletanolamina-N-metiltransferasa (PNMT), cuya expresión es inducida por el cortisol local proveniente de la corteza suprarrenal adyacente (por eso la función medular depende, en parte, de la cortical).","Actúan sobre receptores adrenérgicos α y β: los receptores α son excitadores (vasoconstricción); los receptores β1 cardiacos son excitadores (aumentan frecuencia y contractilidad) y los β2 extracardiacos son inhibidores (vasodilatación, broncodilatación) y estimulan la glucogenólisis y la lipólisis.","Su vida media plasmática es menor a un minuto; se degradan principalmente por la catecol-O-metiltransferasa (COMT) y, en menor grado, por la monoaminooxidasa (MAO), generando metanefrinas y ácido vanililmandélico, que se eliminan por la orina."],
+      regulation:"Se liberan junto con la activación generalizada del sistema nervioso simpático ante estrés agudo, hipoglucemia, hipotensión o hipoxia, aunque en ciertas condiciones fisiológicas pueden actuar de forma independiente del resto del sistema simpático.",
+      clinical:[
+        {cond:"Feocromocitoma", desc:"Tumor de la médula suprarrenal secretor de catecolaminas; causa hipertensión episódica o sostenida, palpitaciones, diaforesis y cefalea. Aproximadamente 60% secreta predominantemente noradrenalina."},
+        {cond:"Metanefrinas urinarias/plasmáticas", desc:"Principal herramienta diagnóstica bioquímica para el feocromocitoma."},
+      ],
+    },
+  ],
+  comparison:{
+    title:"Glucocorticoides vs. Mineralocorticoides vs. Catecolaminas",
+    headers:["Característica","Cortisol","Aldosterona","Adrenalina/Noradrenalina"],
+    rows:[
+      ["Zona/origen","Zona fascicular","Zona glomerular","Médula suprarrenal"],
+      ["Regulador principal","ACTH (eje HPA)","Sistema renina-angiotensina","Sistema nervioso simpático"],
+      ["Naturaleza química","Esteroide","Esteroide","Catecolamina (amina)"],
+      ["Función central","Metabolismo, respuesta al estrés","Balance hidroelectrolítico","Respuesta inmediata 'lucha o huida'"],
+      ["Vida media","Horas","Minutos-horas","Segundos (<1 min)"],
+      ["Exceso clínico","Síndrome de Cushing","Síndrome de Conn","Feocromocitoma"],
+    ],
+  },
+  videos:[
+    {t:"Fisiología de las glándulas suprarrenales", yt:"eib_ejTn5qo"},
+    {t:"Eje hipotálamo-hipófisis-suprarrenal (HPA)", yt:"dy691FNHZSI"},
+  ],
+},
+
+/* ============================================================ MÓDULO 6 */
+{
+  id:"m6", num:6, icon:"reproductive",
+  color:{grad:"from-rose-700 to-pink-600", tag:"bg-[#E3ECEF] text-[var(--navy-deep)] border-[var(--navy-light)]", dot:"#1B4D6E"},
+  title:"Hormonas Sexuales",
+  subtitle:"Reproducción, ciclo menstrual y embarazo",
+  pdf:"guia_modulo_6_hormonas_sexuales.pdf",
+  intro:"El eje hipotálamo-hipófisis-gonadal (HPG) comparte una arquitectura común entre ambos sexos —GnRH pulsátil, FSH y LH— pero diverge en sus glándulas diana: los testículos producen testosterona de forma relativamente constante, mientras que los ovarios generan ciclos mensuales de estrógeno y progesterona que culminan, en ausencia de fecundación, en la menstruación.",
+  axis:[
+    {label:"Hipotálamo", sub:"GnRH pulsátil", fb:null},
+    {label:"Adenohipófisis", sub:"FSH y LH", fb:"Retro (–/+)"},
+    {label:"Gónadas", sub:"Testículo: testosterona · Ovario: estrógeno y progesterona", fb:"Retro (–/+)"},
+    {label:"Efectos periféricos", sub:"Gametogénesis, caracteres sexuales, ciclo menstrual, embarazo", fb:null},
+  ],
+  hormones:[
+    {
+      name:"GnRH", abbr:"Hormona liberadora de gonadotropinas", gland:"Hipotálamo (núcleo arcuato)",
+      tag:"Péptido regulador",
+      summary:"Marcapasos del eje reproductivo: su secreción pulsátil es indispensable para mantener la producción normal de FSH y LH.",
+      mechanism:["Se libera en pulsos hacia el sistema porta hipofisario; la frecuencia y amplitud de los pulsos determinan la proporción relativa de FSH frente a LH liberada por la hipófisis.","Pulsos rápidos favorecen la secreción de LH; pulsos lentos favorecen relativamente más la de FSH.","La administración continua (no pulsátil) de GnRH, en cambio, desensibiliza los receptores hipofisarios y suprime la secreción de gonadotropinas (principio usado en análogos de GnRH para bloqueo hormonal terapéutico)."],
+      regulation:"Modulada por retroalimentación de esteroides gonadales, por la kisspeptina (activador fisiológico clave del generador de pulsos) y por señales metabólicas (leptina, estado nutricional), lo que explica por qué el bajo peso corporal puede suprimir el eje reproductivo.",
+      clinical:[
+        {cond:"Síndrome de Kallmann", desc:"Falla congénita en la migración de neuronas de GnRH → hipogonadismo hipogonadotrópico, frecuentemente asociado a anosmia."},
+        {cond:"Análogos de GnRH", desc:"Se emplean en pubertad precoz, endometriosis y cáncer de próstata hormonodependiente."},
+      ],
+    },
+    {
+      name:"FSH y LH en el eje gonadal", abbr:"FSH / LH", gland:"Adenohipófisis",
+      tag:"Glucoproteínas",
+      summary:"En el hombre sostienen la espermatogénesis y la producción de testosterona; en la mujer dirigen el desarrollo folicular y la ovulación.",
+      mechanism:["En el hombre, la FSH actúa sobre las células de Sertoli (soporte de la espermatogénesis, producción de proteína ligadora de andrógenos e inhibina B) y la LH sobre las células de Leydig (síntesis de testosterona).","En la mujer, la FSH recluta y hace madurar la cohorte de folículos ováricos e induce la expresión de aromatasa; la LH sostiene la esteroidogénesis tecal y desencadena la ovulación mediante su pico preovulatorio.","El pico de LH se produce por un raro ejemplo de retroalimentación positiva: el estrógeno alto y sostenido del folículo dominante, en lugar de inhibir, estimula transitoriamente la liberación hipofisaria de LH."],
+      regulation:"Retroalimentación negativa clásica por esteroides gonadales e inhibina en la mayor parte del ciclo; retroalimentación positiva transitoria por estrógeno alto justo antes de la ovulación.",
+      clinical:[
+        {cond:"Anovulación", desc:"Ausencia del pico de LH impide la ovulación, como ocurre en el síndrome de ovario poliquístico."},
+        {cond:"Hipogonadismo masculino", desc:"FSH y LH bajas sugieren origen central; FSH y LH elevadas sugieren falla testicular primaria."},
+      ],
+    },
+    {
+      name:"Testosterona", abbr:"—", gland:"Células de Leydig (testículo)",
+      tag:"Andrógeno",
+      summary:"Principal andrógeno: responsable de la diferenciación sexual masculina, la espermatogénesis y los caracteres sexuales secundarios.",
+      mechanism:["Sintetizada a partir de colesterol en las células de Leydig bajo estímulo de LH.","Circula mayormente unida a la globulina transportadora de hormonas sexuales (SHBG) y a la albúmina; solo la fracción libre es activa.","En tejidos diana como la piel, la próstata y los folículos pilosos, la enzima 5α-reductasa la convierte en dihidrotestosterona (DHT), un andrógeno más potente responsable de buena parte de la virilización.","En el tejido adiposo y otros sitios, la aromatasa la convierte en estradiol, relevante para la maduración ósea (cierre epifisario) incluso en el varón.","Se une a un receptor nuclear de andrógenos, regulando la transcripción génica en los tejidos diana."],
+      regulation:"Retroalimentación negativa sobre LH (y en menor medida FSH) a nivel hipotalámico e hipofisario. Su producción es relativamente constante, sin el patrón cíclico marcado del eje femenino.",
+      clinical:[
+        {cond:"Hipogonadismo masculino", desc:"Disminución de la libido, masa muscular, densidad ósea y espermatogénesis."},
+        {cond:"Uso de esteroides anabólicos exógenos", desc:"Suprime el eje HPG endógeno por retroalimentación negativa, provocando atrofia testicular e infertilidad."},
+      ],
+    },
+    {
+      name:"Estrógenos", abbr:"Principalmente estradiol (E2)", gland:"Células de la granulosa ovárica",
+      tag:"Esteroide sexual femenino",
+      summary:"Impulsan el desarrollo folicular, la proliferación endometrial y los caracteres sexuales secundarios femeninos.",
+      mechanism:["Las células de la teca producen andrógenos bajo estímulo de LH; estos difunden a las células de la granulosa, donde la aromatasa (inducida por FSH) los convierte en estrógenos (modelo de 'dos células, dos gonadotropinas').","Se unen a receptores nucleares de estrógeno (ERα y ERβ), regulando genes implicados en la proliferación del endometrio (fase proliferativa del ciclo), el desarrollo mamario y la maduración del epitelio vaginal.","Concentraciones crecientes y sostenidas durante la fase folicular tardía desencadenan, de forma inusual, retroalimentación positiva sobre la hipófisis, provocando el pico de LH que induce la ovulación."],
+      regulation:"Aumentan progresivamente durante la fase folicular; tras la ovulación, el cuerpo lúteo mantiene niveles moderados junto con progesterona. En ausencia de embarazo, la luteólisis provoca su caída, desencadenando la menstruación.",
+      clinical:[
+        {cond:"Insuficiencia ovárica / menopausia", desc:"El descenso estrogénico se asocia a sofocos, atrofia vaginal y pérdida acelerada de densidad ósea."},
+        {cond:"Uso anticonceptivo", desc:"Los estrógenos combinados con progestágenos suprimen el eje HPG, evitando el pico de LH y por tanto la ovulación."},
+      ],
+    },
+    {
+      name:"Progesterona", abbr:"—", gland:"Cuerpo lúteo (y placenta en el embarazo)",
+      tag:"Esteroide sexual femenino",
+      summary:"Hormona de la fase lútea y del mantenimiento del embarazo: prepara y sostiene el endometrio secretor.",
+      mechanism:["Tras la ovulación, el folículo residual se transforma en cuerpo lúteo, cuyas células granulosas luteinizadas sintetizan progesterona bajo el sostén de LH.","Se une a receptores nucleares de progesterona, transformando el endometrio proliferativo en endometrio secretor, apto para la implantación.","Eleva la temperatura corporal basal (útil clínicamente para confirmar ovulación) y relaja el músculo liso uterino, favoreciendo la quiescencia miometrial necesaria para sostener un embarazo.","Si ocurre fecundación e implantación, la hCG placentaria (con actividad similar a LH) rescata al cuerpo lúteo, prolongando la producción de progesterona hasta que la placenta asume ese rol hacia la 7ª-10ª semana."],
+      regulation:"Depende del sostén luteotrópico de LH (o de hCG en el embarazo temprano). Si no hay fecundación, el cuerpo lúteo involuciona (luteólisis) hacia el día 14 tras la ovulación, cae la progesterona y se desencadena la menstruación.",
+      clinical:[
+        {cond:"Insuficiencia de fase lútea", desc:"Producción inadecuada de progesterona; se ha vinculado a dificultades para mantener embarazos tempranos."},
+        {cond:"Progesterona en terapia hormonal", desc:"Se añade a la terapia estrogénica en mujeres con útero para prevenir la hiperplasia endometrial."},
+      ],
+    },
+  ],
+  comparison:{
+    title:"Fases del ciclo ovárico-endometrial",
+    headers:["Fase","Hormona dominante","Evento ovárico","Evento endometrial"],
+    rows:[
+      ["Folicular (días 1-14)","Estrógeno creciente (FSH inicial)","Reclutamiento y maduración folicular","Fase proliferativa"],
+      ["Ovulación (~día 14)","Pico de LH (retroalimentación positiva)","Ruptura folicular, liberación del ovocito","—"],
+      ["Lútea (días 15-28)","Progesterona (+ estrógeno)","Cuerpo lúteo activo","Fase secretora"],
+      ["Menstruación","Caída de estrógeno/progesterona","Luteólisis (si no hay fecundación)","Descamación endometrial"],
+    ],
+  },
+  videos:[
+    {t:"Fisiología reproductiva femenina y ciclo menstrual", yt:"GFXnUt2vIYE"},
+    {t:"Fisiología reproductiva masculina", yt:"SDfTdI2927g"},
+  ],
+},
+
+];
+
+/* ---------------------------------------------------------- */
+/* RENDER                                                      */
+/* ---------------------------------------------------------- */
+const root = document.getElementById('modulesRoot');
+const navList = document.getElementById('navList');
+
+function axisFlowHTML(axis){
+  return `<div class="axis-flow">` + axis.map((node,i)=>{
+    const arrow = i < axis.length-1 ? `
+      <div class="axis-arrow">
+        <svg width="26" height="14" viewBox="0 0 26 14" fill="none">
+          <path class="arrow-base-path" d="M1 7h20M16 1l6 6-6 6"/>
+          <path class="arrow-glow-path" d="M1 7h20M16 1l6 6-6 6"/>
+        </svg>
+      </div>` : '';
+    return `
+      <div class="axis-node">
+        ${node.fb ? `<span class="feedback-badge ${node.fb.includes('–')?'fb-neg':'fb-pos'} absolute -top-2.5 right-2">${node.fb}</span>`:''}
+        <p class="font-display font-bold text-[13.5px] text-[var(--ink)] leading-tight">${node.label}</p>
+        <p class="text-[11.5px] text-[var(--ink-soft)] mt-1 leading-snug">${node.sub}</p>
+      </div>
+      ${arrow}`;
+  }).join('') + `</div>`;
+}
+
+function hormoneCardHTML(mod, h, hi){
+  const uid = `${mod.id}-h${hi}`;
+  return `
+  <div class="hormone-card hormone-searchable" data-name="${h.name.toLowerCase()} ${h.abbr.toLowerCase()} ${h.summary.toLowerCase()}">
+    <div class="p-5 pb-4">
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <span class="chip border ${mod.color.tag}">${h.tag}</span>
+          <h4 class="font-display font-bold text-[17px] mt-2 text-[var(--ink)]">${h.name}</h4>
+          <p class="text-[11.5px] font-mono text-[var(--ink-soft)] mt-0.5">${h.abbr}</p>
+        </div>
+      </div>
+      <p class="text-[12px] text-[var(--ink-soft)] mt-2 flex items-start gap-1.5"><span class="mt-0.5 text-[var(--teal)]">${ICONS.target}</span><span>${h.gland}</span></p>
+      <p class="text-[13.5px] text-[var(--ink)] mt-3 leading-relaxed">${h.summary}</p>
+    </div>
+
+    <div class="border-t border-[var(--line)] px-5 pt-3">
+      <div class="flex gap-1.5 flex-wrap tab-group" data-uid="${uid}">
+        <span class="tab-btn active" data-tab="mech">Mecanismo</span>
+        <span class="tab-btn" data-tab="reg">Regulación</span>
+        <span class="tab-btn" data-tab="clin">Clínica</span>
+      </div>
+    </div>
+
+    <div class="px-5 pb-5 pt-3">
+      <div class="tab-panel active" data-uid="${uid}" data-panel="mech">
+        <div class="accordion border border-[var(--line)] rounded-xl overflow-hidden">
+          <div class="accordion-trigger flex items-center justify-between px-4 py-3 bg-[var(--paper)] hover:bg-[var(--paper-deep)]">
+            <span class="text-[12.5px] font-semibold text-[var(--ink)] flex items-center gap-2">${ICONS.flask}Pasos del mecanismo de acción</span>
+            <svg class="chev text-[var(--ink-soft)]" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="accordion-body">
+            <ol class="p-4 space-y-2.5 text-[12.8px] text-[var(--ink-soft)] leading-relaxed">
+              ${h.mechanism.map((step,i)=>`<li class="flex gap-2.5"><span class="font-mono text-[10.5px] font-bold text-white rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5" style="background:${mod.color.dot}">${i+1}</span><span>${step}</span></li>`).join('')}
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-uid="${uid}" data-panel="reg">
+        <p class="text-[12.8px] text-[var(--ink-soft)] leading-relaxed">${h.regulation}</p>
+      </div>
+
+      <div class="tab-panel" data-uid="${uid}" data-panel="clin">
+        <div class="space-y-2.5">
+          ${h.clinical.map(c=>`
+            <div class="flex gap-2.5 bg-[#EAF1EF]/60 border border-[var(--teal-light)] rounded-lg px-3 py-2.5">
+              <span class="text-[var(--teal)] mt-0.5 flex-shrink-0">${ICONS.alert}</span>
+              <div>
+                <p class="text-[12.5px] font-semibold text-[var(--navy-deep)]">${c.cond}</p>
+                <p class="text-[12px] text-[var(--ink-soft)] leading-snug mt-0.5">${c.desc}</p>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function comparisonTableHTML(comp){
+  return `
+  <div class="panel overflow-hidden">
+    <div class="px-5 py-4 border-b border-[var(--line)] flex items-center gap-2">
+      <span class="text-[var(--teal)]">${ICONS.book}</span>
+      <h3 class="font-display font-bold text-[15px]">${comp.title}</h3>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="compare w-full">
+        <thead><tr>${comp.headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${comp.rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===0?'font-semibold text-[var(--ink)]':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function videoSectionHTML(mod){
+  return `
+  <div class="panel p-5">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="text-[var(--teal)]">${ICONS.video}</span>
+      <h3 class="font-display font-bold text-[15px]">Recursos audiovisuales</h3>
+      <a href="https://youtube.com/@medicinabajolalupa?si=0En7JswWQjrWRH8o" target="_blank" rel="noopener" class="text-[10.5px] font-mono text-[var(--navy)] ml-auto hover:underline">Ver más en @medicinabajolalupa →</a>
+    </div>
+    <div class="grid sm:grid-cols-2 gap-4">
+      ${mod.videos.map(v=>`
+        <div>
+          <div class="video-frame-wrap">
+            <!-- 
+              VIDEO DE YOUTUBE — reemplaza el ID de 11 caracteres en el atributo src.
+              Ejemplo: si tu URL es https://youtu.be/XXXXXXXXXXX  -> usa XXXXXXXXXXX
+            -->
+            <iframe
+              src="https://www.youtube.com/embed/${v.yt}"
+              title="${v.t}"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <p class="text-[12.5px] font-medium text-[var(--ink-soft)] mt-2">${v.t}</p>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function pdfSectionHTML(mod){
+  return `
+  <div class="panel p-5 flex flex-col sm:flex-row items-center sm:items-center gap-4 justify-between text-center sm:text-left">
+    <div class="flex items-center gap-3">
+      <span class="lens w-11 h-11 flex-shrink-0" style="background:var(--paper-deep);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6"/></svg>
+      </span>
+      <div class="text-left">
+        <p class="font-display font-bold text-[14.5px] text-[var(--ink)]">Guía de estudio en PDF</p>
+        <p class="text-[11.5px] text-[var(--ink-soft)] mt-0.5">Resumen descargable del Módulo ${String(mod.num).padStart(2,'0')}: ejes, mecanismos y correlación clínica.</p>
+      </div>
+    </div>
+    <a href="${mod.pdf}" download class="pdf-btn flex-shrink-0">${ICONS.download}Descargar PDF</a>
+  </div>`;
+}
+
+function moduleHTML(mod){
+  return `
+  <section id="${mod.id}" class="module-view">
+    <div class="hero-gradient rounded-2xl p-6 lg:p-8 mb-6 relative overflow-hidden text-center lg:text-left">
+      <div class="relative z-10 mx-auto lg:mx-0 max-w-3xl">
+        <div class="flex items-center justify-center lg:justify-start gap-2 mb-3">
+          <span class="font-mono text-[11px] tracking-widest text-[#6FC4B1]">MÓDULO ${String(mod.num).padStart(2,'0')}</span>
+        </div>
+        <h2 class="font-display font-extrabold text-white text-2xl lg:text-[28px] leading-tight">${mod.title}</h2>
+        <p class="text-[#DCEFE9]/90 text-[13.5px] mt-1.5">${mod.subtitle}</p>
+        <p class="text-white/70 text-[13px] leading-relaxed mt-4">${mod.intro}</p>
+      </div>
+    </div>
+
+    <div class="mb-6">${pdfSectionHTML(mod)}</div>
+
+    <div class="panel p-5 mb-6">
+      <div class="flex items-center gap-2 mb-4 justify-center lg:justify-start">
+        <span class="text-[var(--teal)]">${ICONS.target}</span>
+        <h3 class="font-display font-bold text-[15px]">Eje regulador</h3>
+        <span class="text-[10.5px] font-mono text-[var(--ink-soft)] ml-auto hidden lg:flex items-center gap-1"><span class="dot-legend" style="background:var(--teal)"></span>señal hormonal</span>
+      </div>
+      ${axisFlowHTML(mod.axis)}
+    </div>
+
+    <div class="flex items-center gap-2 mb-4 justify-center lg:justify-start">
+      <span class="text-[var(--teal)]">${ICONS.flask}</span>
+      <h3 class="font-display font-bold text-[15px]">Hormonas del módulo</h3>
+    </div>
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-5 mb-6">
+      ${mod.hormones.map((h,hi)=>hormoneCardHTML(mod,h,hi)).join('')}
+    </div>
+
+    <div class="mb-6">${comparisonTableHTML(mod.comparison)}</div>
+
+    <div class="mb-2">${videoSectionHTML(mod)}</div>
+  </section>`;
+}
+
+MODULES.forEach(mod=>{ root.insertAdjacentHTML('beforeend', moduleHTML(mod)); });
+
+MODULES.forEach(mod=>{
+  navList.insertAdjacentHTML('beforeend', `
+    <div class="nav-item" data-target="${mod.id}">
+      <span class="nav-num">${String(mod.num).padStart(2,'0')}</span>
+      <span class="flex-1 truncate">${mod.title}</span>
+    </div>`);
+});
+
+/* ---------------------------------------------------------- */
+/* NAVIGATION                                                   */
+/* ---------------------------------------------------------- */
+function showModule(id){
+  document.querySelectorAll('.module-view').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const navEl = document.querySelector(`.nav-item[data-target="${id}"]`);
+  if(navEl) navEl.classList.add('active');
+  document.getElementById('mainContent').scrollTo({top:0,behavior:'smooth'});
+  if (window.innerWidth < 1024) closeSidebarFn();
+  location.hash = id;
+}
+document.querySelectorAll('.nav-item').forEach(el=>{
+  el.addEventListener('click', ()=>showModule(el.dataset.target));
+});
+const startId = (location.hash||'').replace('#','');
+const validIds = ['about', ...MODULES.map(m=>m.id)];
+showModule(validIds.includes(startId) ? startId : 'about');
+
+/* Sidebar mobile toggle */
+const sidebar = document.getElementById('sidebar');
+const backdrop = document.getElementById('sidebarBackdrop');
+function openSidebarFn(){ sidebar.classList.add('open'); backdrop.classList.remove('hidden'); }
+function closeSidebarFn(){ sidebar.classList.remove('open'); backdrop.classList.add('hidden'); }
+document.getElementById('openSidebar').addEventListener('click', openSidebarFn);
+document.getElementById('closeSidebar').addEventListener('click', closeSidebarFn);
+backdrop.addEventListener('click', closeSidebarFn);
+
+/* ---------------------------------------------------------- */
+/* TABS (event delegation)                                     */
+/* ---------------------------------------------------------- */
+document.addEventListener('click', (e)=>{
+  const tabBtn = e.target.closest('.tab-btn');
+  if(tabBtn){
+    const uid = tabBtn.closest('.tab-group').dataset.uid;
+    const group = tabBtn.closest('.tab-group');
+    group.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    tabBtn.classList.add('active');
+    const card = tabBtn.closest('.hormone-card');
+    card.querySelectorAll(`.tab-panel[data-uid="${uid}"]`).forEach(p=>p.classList.remove('active'));
+    card.querySelector(`.tab-panel[data-uid="${uid}"][data-panel="${tabBtn.dataset.tab}"]`).classList.add('active');
+  }
+
+  const acc = e.target.closest('.accordion-trigger');
+  if(acc){
+    const body = acc.nextElementSibling;
+    const isOpen = acc.classList.contains('open');
+    if(isOpen){
+      body.style.maxHeight = null;
+      acc.classList.remove('open');
+    } else {
+      acc.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+});
+
+/* ---------------------------------------------------------- */
+/* SEARCH                                                       */
+/* ---------------------------------------------------------- */
+const searchIndex = [];
+MODULES.forEach(mod=>{
+  mod.hormones.forEach((h,hi)=>{
+    searchIndex.push({
+      modId:mod.id, modTitle:mod.title, num:mod.num, uid:`${mod.id}-h${hi}`,
+      name:h.name, abbr:h.abbr, summary:h.summary,
+      haystack:(h.name+' '+h.abbr+' '+h.summary+' '+h.gland+' '+h.tag).toLowerCase()
+    });
+  });
+});
+
+const searchInput = document.getElementById('globalSearch');
+const searchResults = document.getElementById('searchResults');
+const clearBtn = document.getElementById('clearSearch');
+
+function highlight(text, q){
+  if(!q) return text;
+  const re = new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig');
+  return text.replace(re,'<mark>$1</mark>');
+}
+
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim().toLowerCase();
+  clearBtn.classList.toggle('hidden', q.length===0);
+  if(q.length < 2){ searchResults.classList.add('hidden'); return; }
+  const hits = searchIndex.filter(item=>item.haystack.includes(q)).slice(0,10);
+  if(hits.length===0){
+    searchResults.innerHTML = `<div class="p-4 text-sm text-[var(--ink-soft)]">Sin resultados para "${searchInput.value}"</div>`;
+  } else {
+    searchResults.innerHTML = hits.map(h=>`
+      <div class="search-hit px-4 py-3 border-b border-[var(--line)] last:border-0" data-mod="${h.modId}" data-uid="${h.uid}">
+        <div class="flex items-center gap-2">
+          <span class="chip bg-[var(--paper-deep)] text-[var(--ink-soft)]">Módulo ${h.num}</span>
+          <span class="text-[10px] font-mono text-[var(--ink-soft)]">${h.modTitle}</span>
+        </div>
+        <p class="text-sm font-semibold text-[var(--ink)] mt-1">${highlight(h.name,q)}</p>
+        <p class="text-xs text-[var(--ink-soft)] mt-0.5 line-clamp-1">${highlight(h.summary,q)}</p>
+      </div>`).join('');
+  }
+  searchResults.classList.remove('hidden');
+});
+
+searchResults.addEventListener('click', (e)=>{
+  const hit = e.target.closest('.search-hit');
+  if(!hit) return;
+  showModule(hit.dataset.mod);
+  searchResults.classList.add('hidden');
+  searchInput.value='';
+  clearBtn.classList.add('hidden');
+  setTimeout(()=>{
+    const card = document.querySelectorAll(`#${hit.dataset.mod} .hormone-card`)[parseInt(hit.dataset.uid.split('-h')[1])];
+    if(card){
+      card.scrollIntoView({behavior:'smooth', block:'center'});
+      card.style.transition='box-shadow .3s ease, border-color .3s ease';
+      card.style.boxShadow='0 0 0 3px rgba(46,149,131,.45)';
+      card.style.borderColor='var(--teal)';
+      setTimeout(()=>{ card.style.boxShadow=''; card.style.borderColor=''; }, 2200);
+    }
+  }, 400);
+});
+
+clearBtn.addEventListener('click', ()=>{
+  searchInput.value=''; clearBtn.classList.add('hidden'); searchResults.classList.add('hidden'); searchInput.focus();
+});
+
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('#globalSearch') && !e.target.closest('#searchResults')){
+    searchResults.classList.add('hidden');
+  }
+});
+</script>
+</body>
+</html>
